@@ -125,15 +125,20 @@
         <div class="container">                   
             <h1>Gestor de tareas</h1>        
               
-            <div class="panel" style="border:0; box-shadow: none">
-                <input id="nombreTarea" type="text" placeholder="Nombre tarea">
-                 <?php 
+            <div class="panel" style="border:0; box-shadow: none; padding-bottom: 35px">
+                <div>
+                    <input id="nombreTarea" class="col-lg-3 col-md-3 col-sm-5 col-xs-12" type="text" placeholder="Nombre tarea">
+                </div> 
+                <?php 
                     foreach($categorias as $categoria){?>
-                       <input type="checkbox" name="categorias[]" value="<?php echo $categoria->id ?>">
-                       <label><?php echo $categoria->nombre ?></label>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-4">
+                            <input type="checkbox" name="categorias[]" value="<?php echo $categoria->id ?>">
+                            <label><?php echo $categoria->nombre ?></label>
+                        </div>
                 <?php } ?>              
-
-                <button class="btn btn-default" type="button" value="Añadir" onclick="nuevaTarea()">Añadir</button>                             
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-6">
+                    <button class="btn btn-default" type="button" value="Añadir" onclick="nuevaTarea()">Añadir</button>                             
+                </div>
             </div>
         
             <table id="tablaTareas" class="display table-striped table table-bordered">
