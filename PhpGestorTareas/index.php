@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -11,9 +7,13 @@ and open the template in the editor.
         
         <script src="Scripts/jquery-3.0.0.js"></script>    
         
-        <!-- Latest compiled and minified CSS -->
+        <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <!-- Font-awesome --> 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+        
+        <script src="Scripts/sweetalert.min.js"></script> 
+        <link rel="stylesheet" type="text/css" href="Css/sweetalert.css">
         
         <script>
             function nuevaTarea()
@@ -27,13 +27,30 @@ and open the template in the editor.
                 
                 $.ajax({
                    data: parametros,
+                   dataType: "json", 
                    url: 'Actions/insertar_tarea.php',
                    type: 'post',                   
-                   success: function() {
-                       recargarTareas();
+                   success: function(result) {
+                       if(result.success) {
+                           recargarTareas();
+                       }
+                       else {
+                           swal({
+                               title: "Error",
+                               text: "La tarea ya existe.",
+                               type: "error",
+                               confirmButtonText: "Aceptar"
+                           });
+                       }
+                       
                    },
                    error: function(data) {
-                       alert("La tarea ya existe");
+                        swal({
+                               title: "Error",
+                               text: data.responseText,
+                               type: "error",
+                               confirmButtonText: "Aceptar"
+                           });
                    }
                 });
             }
@@ -46,13 +63,29 @@ and open the template in the editor.
                 
                 $.ajax({
                    data: parametros,
+                   dataType: "json", 
                    url: 'Actions/eliminar_tarea.php',
                    type: 'post',
-                   success: function() {
-                      recargarTareas();
+                   success: function(result) {
+                       if(result.success) {
+                           recargarTareas();
+                       }
+                       else {
+                           swal({
+                               title: "Error",
+                               text: "La tarea ya no existe",
+                               type: "error",
+                               confirmButtonText: "Aceptar"
+                           });
+                       }                      
                    },
-                   error: function() {
-                       alert("La tarea ya no existe");
+                   error: function(data) {
+                       swal({
+                               title: "Error",
+                               text: data.responseText,
+                               type: "error",
+                               confirmButtonText: "Aceptar"
+                           });
                    }
                 });
             }
@@ -65,7 +98,15 @@ and open the template in the editor.
                     dataType: "html",   
                     success: function(response){                   
                         $("#listaTareas").html(response);                        
-                    }
+                    },
+                    error: function(data) {
+                       swal({
+                               title: "Error",
+                               text: data.responseText,
+                               type: "error",
+                               confirmButtonText: "Aceptar"
+                           });
+                   }
                 });
             }
         </script>
@@ -74,27 +115,26 @@ and open the template in the editor.
     
     <body>
         <?php
-        // put your code here
+        //Cargamos los datos que necesita la 'vista'
         require_once './Models/Categoria.php';
         require_once './Models/Tarea.php';
-        $p = \Models\Categoria::consultar_todas();
+        $categorias = \Models\Categoria::consultar_todas();
+        $tareas = \Models\Tarea::consultar_todas();
         ?>
         
         <div class="container">                   
             <h1>Gestor de tareas</h1>        
-                    
-            <input id="nombreTarea" type="text" placeholder="Nombre tarea">
-             <?php 
-                foreach($p as $c){?>
-                   <input type="checkbox" name="categorias[]" value="<?php echo $c->id ?>"> <label><?php echo $c->nombre ?></label>
-            <?php } ?>              
+              
+            <div class="panel" style="border:0; box-shadow: none">
+                <input id="nombreTarea" type="text" placeholder="Nombre tarea">
+                 <?php 
+                    foreach($categorias as $categoria){?>
+                       <input type="checkbox" name="categorias[]" value="<?php echo $categoria->id ?>">
+                       <label><?php echo $categoria->nombre ?></label>
+                <?php } ?>              
 
-            <button class="btn btn-default" type="button" value="Añadir" onclick="nuevaTarea()">Añadir</button>        
-            
-        <?php
-        $tareas = \Models\Tarea::consultar_todas();
-        ?>  
-            <br/>
+                <button class="btn btn-default" type="button" value="Añadir" onclick="nuevaTarea()">Añadir</button>                             
+            </div>
         
             <table id="tablaTareas" class="display table-striped table table-bordered">
                 <thead>
@@ -126,10 +166,7 @@ and open the template in the editor.
                     </tr> <?php } ?>
                 </tbody>
             </table>        
-        </div>
-        <?php
-        
-        ?>
+        </div>       
         
     </body>
 </html>

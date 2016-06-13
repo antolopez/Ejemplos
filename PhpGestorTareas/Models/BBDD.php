@@ -2,6 +2,9 @@
 
 require_once (__DIR__)."/../config.php";
 
+/**
+ * Singleton que proporciona la conexión con la base de datos.
+ */
 class BBDD
 {
    private static $instancia;
